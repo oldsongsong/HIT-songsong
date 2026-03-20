@@ -27,7 +27,9 @@
 
 ## 运行方式
 
-在 MATLAB 当前目录切到仓库根目录后，可直接执行：
+### 方式 A：最简单的调用方式（推荐）
+
+在 MATLAB 当前目录切到仓库根目录后，直接执行：
 
 ```matlab
 results = particle_bubble_collision_demo();
@@ -35,7 +37,46 @@ results = particle_bubble_collision_demo('validation');
 results = particle_bubble_collision_demo('dynamic');
 ```
 
-其中 `particle_bubble_collision_demo.m` 现在只是一个**兼容入口包装器**，真正的实现已迁移到 `matlab_particle_bubble/` 目录下。
+其中 `particle_bubble_collision_demo.m` 是**兼容入口包装器**，会自动把路径切到 `matlab_particle_bubble/`，然后转发到 `pb_run.m`。
+
+### 方式 B：直接运行快速上手脚本
+
+如果你不想手动记函数名，可以直接运行：
+
+```matlab
+particle_bubble_quickstart
+```
+
+这个脚本里已经给出了：
+
+- 整体调用示例；
+- 只跑验证算例的示例；
+- 只跑动力学算例的示例；
+- 自定义参数后调用模块函数的示例；
+- 最底层 `pb_build_adaptive_grid` + `pb_solve_reynolds_pressure` 的示例。
+
+### 方式 C：直接调用模块函数（进阶）
+
+如果你要自己改参数、改判据、改求解器，可以直接这样写：
+
+```matlab
+addpath('matlab_particle_bubble');
+par = pb_default_parameters();
+par.initialGap = 15e-6;
+par.validationUrel = 2e-3;
+
+validation = pb_run_validation_case(par, true);
+dynamic    = pb_run_dynamic_case(par, true);
+```
+
+再往下，你也可以手动调用最底层模块：
+
+```matlab
+addpath('matlab_particle_bubble');
+par  = pb_default_parameters();
+grid = pb_build_adaptive_grid(1e-6, par);
+sol  = pb_solve_reynolds_pressure(grid, 1e-6, 1e-3, par);
+```
 
 ## 下一步建议
 
